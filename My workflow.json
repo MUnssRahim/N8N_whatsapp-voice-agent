@@ -1,0 +1,234 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const binary = $input.first().binary;\nbinary.data.fileName = 'audio.ogg';\nbinary.data.mimeType = 'audio/ogg';\nreturn $input.first();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "da837aba-1977-4b7c-ae1e-f6e71baaa363",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions](https://api.groq.com/openai/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model = whisper-large-v3",
+              "value": "file = data"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        0
+      ],
+      "id": "93d3a194-e453-4ff8-80fb-e8372badb9c9",
+      "name": "HTTP Request",
+      "credentials": {
+        "groqApi": {
+          "id": "vghQYCQKwoedIfo6",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "\"You are a helpful voice assistant. Keep your answers concise, conversational, and easy to listen to. Do not use any hyphens or dashes in your output text, as this can interrupt the text-to-speech flow.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "f8628663-6879-45ea-a116-18ee05d68ea0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        688,
+        208
+      ],
+      "id": "94d23eb9-b1a7-46cb-b9b8-1bdc583613c2",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "vghQYCQKwoedIfo6",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/speech](https://api.groq.com/openai/v1/audio/speech",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"canopylabs/orpheus-v1-english\",\n  \"voice\": \"hannah\",\n  \"response_format\": \"wav\",\n  \"input\": \"{{ $json.output }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        80
+      ],
+      "id": "8b17e363-aaaa-4b79-9e6c-c5bb40fa7574",
+      "name": "HTTP Request1",
+      "credentials": {
+        "groqApi": {
+          "id": "vghQYCQKwoedIfo6",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "107ab4d9-b264-4b14-9564-5084bd5e7117",
+      "name": "WhatsApp Trigger",
+      "webhookId": "4e7a6329-0d7c-4c36-bad5-348461160b8c"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        48
+      ],
+      "id": "44e7e77a-7ea4-4efb-8029-41f04608eaa0",
+      "name": "Send message",
+      "webhookId": "8e873da5-b35a-45c0-8989-05b400c12b42"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f8254074-0cb3-4086-a6b7-6a04f92e25dc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "73e57b318f322a6efdb02f0ecb02ed9bdc43ebcb8b77d1de84da8a38ab48530c"
+  },
+  "nodeGroups": [],
+  "id": "axsiZg0M1nZTHPn0",
+  "tags": []
+}
