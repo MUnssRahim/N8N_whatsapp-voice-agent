@@ -1,5 +1,5 @@
 {
-  "name": "My workflow",
+  "name": "WhatsApp Voice Agent",
   "nodes": [
     {
       "parameters": {
@@ -17,7 +17,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.groq.com/openai/v1/audio/transcriptions](https://api.groq.com/openai/v1/audio/transcriptions",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "groqApi",
         "sendBody": true,
@@ -25,10 +25,13 @@
         "bodyParameters": {
           "parameters": [
             {
-              "name": "model = whisper-large-v3",
-              "value": "file = data"
+              "name": "model",
+              "value": "whisper-large-v3"
             },
-            {}
+            {
+              "name": "file",
+              "value": "data"
+            }
           ]
         },
         "options": {}
@@ -86,12 +89,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.groq.com/openai/v1/audio/speech](https://api.groq.com/openai/v1/audio/speech",
+        "url": "https://api.groq.com/openai/v1/audio/speech",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "groqApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"canopylabs/orpheus-v1-english\",\n  \"voice\": \"hannah\",\n  \"response_format\": \"wav\",\n  \"input\": \"{{ $json.output }}\"\n}",
+        "jsonBody": "{\n  \"model\": \"canopylabs/orpheus-v1-english\",\n  \"voice\": \"hannah\",\n  \"response_format\": \"wav\",\n  \"input\": \"{{ $json.output }}\"\n}",
         "options": {
           "response": {
             "response": {

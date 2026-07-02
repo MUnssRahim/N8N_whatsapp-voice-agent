@@ -1,0 +1,16 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Local runtime artifacts
+*.log
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.swp
